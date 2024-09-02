@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "524995203458",
+    "project_id": "paypan-532f2",
+    "storage_bucket": "paypan-532f2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524995203458:android:9330f6645787a230e5ff9b",
+        "android_client_info": {
+          "package_name": "com.example.paypan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtaz1GCCMBRHiZyfuHLEGwsArqQ8DdZc0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524995203458:android:3db25d3744d07693e5ff9b",
+        "android_client_info": {
+          "package_name": "com.paypan.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtaz1GCCMBRHiZyfuHLEGwsArqQ8DdZc0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524995203458:android:d870b0623106b190e5ff9b",
+        "android_client_info": {
+          "package_name": "paypan.id"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtaz1GCCMBRHiZyfuHLEGwsArqQ8DdZc0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
