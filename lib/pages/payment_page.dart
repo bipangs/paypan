@@ -10,48 +10,82 @@ class PaymentPage extends StatefulWidget {
 
 class _PaymentPageState extends State<PaymentPage> {
   final TextEditingController _paymentController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final _firestore = FirebaseFirestore.instance;
 
-  void _topUpBalance() async {
+  void _makePayment() async {
     String? userId =
         Provider.of<UserProvider>(context, listen: false).user?.userId;
-    if (userId != null && _paymentController.text.isNotEmpty) {
+    String recipientUsername = _usernameController.text.trim();
+    if (userId != null &&
+        _paymentController.text.isNotEmpty &&
+        recipientUsername.isNotEmpty) {
       try {
-        int PaymentAmount = int.parse(_paymentController.text);
+        int paymentAmount = int.parse(_paymentController.text);
 
-        // Get the current balance from Firestore
-        DocumentSnapshot userDoc =
+        // Get the current user's balance
+        DocumentSnapshot currentUserDoc =
             await _firestore.collection('users').doc(userId).get();
         int currentBalance =
-            (userDoc.data() as Map<String, dynamic>)['balance'] ?? 0;
+            (currentUserDoc.data() as Map<String, dynamic>)['balance'] ?? 0;
 
-        int newBalance = currentBalance;
-
-        // Update the balance
-        if (PaymentAmount > currentBalance) {
+        if (paymentAmount > currentBalance) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Payment failed! Not enough Balance!')),
+            SnackBar(content: Text('Payment failed! Not enough balance!')),
           );
           return;
-        } else {
-          newBalance = currentBalance - PaymentAmount;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text('Payment successful! Your balance: $newBalance')),
-          );
         }
 
+        // Find the recipient by username
+        QuerySnapshot recipientSnapshot = await _firestore
+            .collection('users')
+            .where('username', isEqualTo: recipientUsername)
+            .limit(1)
+            .get();
+
+        if (recipientSnapshot.docs.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Payment failed! Username not found!')),
+          );
+          return;
+        }
+
+        DocumentSnapshot recipientDoc = recipientSnapshot.docs.first;
+        String recipientId = recipientDoc.id;
+        int recipientBalance =
+            (recipientDoc.data() as Map<String, dynamic>)['balance'] ?? 0;
+
+        // Update balances
+        int newCurrentBalance = currentBalance - paymentAmount;
+        int newRecipientBalance = recipientBalance + paymentAmount;
+
+        // Update Firestore
         await _firestore.collection('users').doc(userId).update({
-          'balance': newBalance,
+          'balance': newCurrentBalance,
         });
 
+        await _firestore.collection('users').doc(recipientId).update({
+          'balance': newRecipientBalance,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Payment successful! Your new balance: $newCurrentBalance')),
+        );
+
         _paymentController.clear();
+        _usernameController.clear();
       } catch (e) {
         print(e);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Payment failed. Please try again.')),
         );
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter all the required fields.')),
+      );
     }
   }
 
@@ -89,6 +123,15 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
                 Image.asset('lib/assets/paypan_logo.png', height: 100),
                 SizedBox(height: 20),
+                TextFormField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    labelText: "Enter recipient's username",
+                    labelStyle: TextStyle(color: Colors.white),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 20),
                 Row(
                   children: [
                     Text(
@@ -117,7 +160,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 SizedBox(height: 20),
                 Center(
                   child: ElevatedButton(
-                    onPressed: _topUpBalance,
+                    onPressed: _makePayment,
                     child: Text(
                       "Pay",
                       style: TextStyle(
