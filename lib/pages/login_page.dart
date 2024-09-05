@@ -22,17 +22,17 @@ class _LoginPageState extends State<LoginPage> {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
 
-    // Validation
     if (username.isEmpty || username.length < 5) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Username must be at least 5 characters long.')),
+        const SnackBar(
+            content: Text('Username must be at least 5 characters long.')),
       );
       return;
     }
 
     if (password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password cannot be empty.')),
+        const SnackBar(content: Text('Password cannot be empty.')),
       );
       return;
     }
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
 
       if (userQuery.docs.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Username not registered.')),
+          const SnackBar(content: Text('Username not registered.')),
         );
         setState(() {
           _isLoading = false;
@@ -75,7 +75,6 @@ class _LoginPageState extends State<LoginPage> {
       // Navigate to another page or show success message
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
-      print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to sign in: $e')),
       );
@@ -89,9 +88,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
       body: Stack(children: [
         AnimatedContainer(
           duration: const Duration(seconds: 3),
@@ -111,35 +107,47 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Image.asset(
+                'lib/assets/paypan_logo.png',
+                height: 100,
+              ),
               TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Username',
+                  labelStyle: TextStyle(color: Colors.white60),
+                  
                   border: OutlineInputBorder(),
                 ),
+                style: const TextStyle(color: Colors.white),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Password',
+                  labelStyle: TextStyle(color: Colors.white60),
                   border: OutlineInputBorder(),
                 ),
+                style: const TextStyle(color: Colors.white),
                 obscureText: true,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _isLoading
-                  ? CircularProgressIndicator()
+                  ? const CircularProgressIndicator()
                   : ElevatedButton(
                       onPressed: _login,
-                      child: Text('Login'),
+                      child: const Text('Login'),
                     ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
                   Navigator.pushNamed(context, '/register');
                 },
-                child: Text('Don\'t have an account? Register'),
+                child: const Text(
+                  'Don\'t have an account? Register',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
